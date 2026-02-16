@@ -1,16 +1,6 @@
 'use client';
 
-import { agents } from '@/data/agents';
-
-interface ProjectEntry {
-  name: string;
-  path: string;
-  status: string;
-  progress: number;
-  agentName: string;
-  agentEmoji: string;
-  agentColor: string;
-}
+import { Agent } from '@/app/page';
 
 const statusBadge = (status: string) => {
   const styles: Record<string, string> = {
@@ -22,8 +12,8 @@ const statusBadge = (status: string) => {
   return styles[status] || styles.planned;
 };
 
-export default function ProjectPanel() {
-  const allProjects: ProjectEntry[] = agents.flatMap((a) =>
+export default function ProjectPanel({ agents }: { agents: Agent[] }) {
+  const allProjects = agents.flatMap((a) =>
     a.projects.map((p) => ({
       ...p,
       agentName: a.name,
@@ -45,18 +35,14 @@ export default function ProjectPanel() {
       </div>
       <div className="divide-y divide-gray-50 max-h-96 overflow-y-auto">
         {allProjects.map((p) => (
-          <div key={`${p.agentName}-${p.path}`} className="px-5 py-3 flex items-center gap-3 hover:bg-gray-50 transition">
+          <div key={`${p.agentName}-${p.id}`} className="px-5 py-3 flex items-center gap-3 hover:bg-gray-50 transition">
             <span className="text-lg">{p.agentEmoji}</span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusBadge(p.status)}`}>{p.status}</span>
               </div>
-              <div className="flex items-center gap-2 mt-0.5">
-                <code className="text-xs text-gray-400 font-mono truncate">{p.path}</code>
-                <span className="text-xs text-gray-300">•</span>
-                <span className={`text-xs font-medium ${p.agentColor}`}>{p.agentName}</span>
-              </div>
+              <span className={`text-xs font-medium ${p.agentColor}`}>{p.agentName}</span>
             </div>
             <div className="text-right">
               <span className="text-xs font-medium text-gray-500">{p.progress}%</span>

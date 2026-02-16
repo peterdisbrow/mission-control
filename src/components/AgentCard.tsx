@@ -1,6 +1,6 @@
 'use client';
 
-import { Agent } from '@/data/agents';
+import { Agent } from '@/app/page';
 
 const statusConfig = {
   idle: { dot: 'bg-gray-400', label: 'Idle', pulse: false },
@@ -28,7 +28,7 @@ const statusBadge = (status: string) => {
   return styles[status] || styles.planned;
 };
 
-export default function AgentCard({ agent, onClick }: { agent: Agent; onClick: () => void }) {
+export default function AgentCard({ agent, onClick, timeAgo }: { agent: Agent; onClick: () => void; timeAgo: (iso: string) => string }) {
   const sc = statusConfig[agent.status];
 
   return (
@@ -36,7 +36,6 @@ export default function AgentCard({ agent, onClick }: { agent: Agent; onClick: (
       onClick={onClick}
       className={`w-full text-left rounded-2xl border-2 ${agent.borderColor} ${agent.bgColor} p-5 shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400`}
     >
-      {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="text-4xl">{agent.emoji}</div>
@@ -51,15 +50,13 @@ export default function AgentCard({ agent, onClick }: { agent: Agent; onClick: (
         </div>
       </div>
 
-      {/* Current task */}
       <p className="text-sm text-gray-600 mb-3 line-clamp-2">
         <span className="font-medium text-gray-700">Now:</span> {agent.currentTask}
       </p>
 
-      {/* Top projects */}
       <div className="space-y-2">
         {agent.projects.slice(0, 2).map((p) => (
-          <div key={p.path}>
+          <div key={p.id}>
             <div className="flex items-center justify-between mb-0.5">
               <span className="text-xs font-medium text-gray-700 truncate">{p.name}</span>
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusBadge(p.status)}`}>
@@ -73,9 +70,8 @@ export default function AgentCard({ agent, onClick }: { agent: Agent; onClick: (
         ))}
       </div>
 
-      {/* Footer */}
       <div className="mt-3 flex items-center justify-between">
-        <span className="text-xs text-gray-400">Last active: {agent.lastActivity}</span>
+        <span className="text-xs text-gray-400">Last active: {timeAgo(agent.lastActivity)}</span>
         <span className="text-xs text-gray-400">{agent.projects.length} projects →</span>
       </div>
     </button>
